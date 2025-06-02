@@ -46,31 +46,39 @@ def main():
     parser = argparse.ArgumentParser(description="Automation Toolkit")
     subparsers = parser.add_subparsers(dest="commands")
     
-    fmParser = subparsers.add_parser("move files")
-    fmParser.add_argument("--src", required=True, help="Source directory")
-    fmParser.add_argument("--dst", required=True, help="Destination directory")
-    fmParser.add_argument("--pattern", default="*.pdf",  help="File pattrn to move")
+    parser.add_argument("--src", help="Source directory")
+    parser.add_argument("--dst", help="Destination directory")
+    parser.add_argument("--pattern", default="*.pdf",  help="File pattrn to move")
     
-    scParser = subparsers.add_parser("scrape")
-    scParser.add_argument("--url", required=True, help="Url to scrape")
-    scParser.add_argument("--selector", required=True, help="CSS selector")
-    scParser.add_argument("-o", required=True, help="Output file")
+    parser.add_argument("--scrape", action="store_true", help="Url to scrape")
+    parser.add_argument("--url", help="Url to scrape")
+    parser.add_argument("--selector", help="CSS selector")
+    parser.add_argument("-o", help="Output file")
     
-    formParser = subparsers.add_parser("fill form")
-    formParser.add_argument("--url", required=True, help="Form URL")
-    formParser.add_argument("--field", nargs='+', help="Field input pairs as selector=value")
+    parser.add_argument("--form", action="store_true", help="Form URL")
+    parser.add_argument("--field", nargs='+', help="Field input pairs as selector=value")
     
     args = parser.parse_args()
     
-    if args.command == "move files":
+    if args.scrape:
+        if args.url and args.selector and args.o:
+            scrapeTitles(args.url, args.selector, args.o)
+        else:
+            print("Missing arguements: --url, --selector, --o")
+            
+    elif args.form:
+        if args.url and args.fields:
+            fieldData = dict(pair.split("=", 1) for pair in args.field)
+            formAutomation(args.url, fieldData)
+        else:
+            print("Missing arguements: --url, --fields")
+            
+    elif args.src and args.dst:        
         moveFiles(args.src, args.dst, args.pattern)
-    elif args.command == "scrape":
-        scrapeTitles(args.url, args.selector, args.o)
-    elif args.command == ("fill form"):
-        fieldData = dict(pair.split("=", 1) for pair in args.field)
-        formAutomation(args.url, fieldData)
+           
     else:
         parser.print_help()
+        
         
 if __name__ == "__main__":
     main()
