@@ -49,7 +49,7 @@ def main():
     fmParser = subparsers.add_parser("move files")
     fmParser.add_argument("--src", required=True, help="Source directory")
     fmParser.add_argument("--dst", required=True, help="Destination directory")
-    fmParser.add_argument("--pattern", required=True, default="*.pdf",  help="File pattrn to move")
+    fmParser.add_argument("--pattern", default="*.pdf",  help="File pattrn to move")
     
     scParser = subparsers.add_parser("scrape")
     scParser.add_argument("--url", required=True, help="Url to scrape")
